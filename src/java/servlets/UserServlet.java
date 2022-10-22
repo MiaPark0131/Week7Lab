@@ -154,9 +154,6 @@ public class UserServlet extends HttpServlet {
                     break;
             }
             
-            users = us.getAll();
-            roles = rs.getAll();
-            
         } catch (Exception ex) {
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
