@@ -1,12 +1,13 @@
 package models;
 
 import java.io.Serializable;
+import exceptions.InvalidInputException;
 
 /**
  *
  * @author meeye
  */
-public class User implements Serializable {
+public class User implements Serializable  {
     
     private String email;
     private String firstname;
@@ -18,7 +19,12 @@ public class User implements Serializable {
         
     }
 
-    public User(String email, String firstname, String lastname, String password, Role role) {
+    public User(String email, String firstname, String lastname, String password, Role role) throws InvalidInputException {
+        
+        if (email.isEmpty() || firstname.isEmpty() || lastname.isEmpty() || password.isEmpty()) {
+            throw new InvalidInputException();
+        }
+        
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -66,7 +72,6 @@ public class User implements Serializable {
     public void setRole(Role role) {
         this.role = role;
     }
-
     
     
 }

@@ -1,6 +1,8 @@
 package servlets;
 
+import exceptions.InvalidInputException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,52 +32,60 @@ public class UserServlet extends HttpServlet {
         UserService us = new UserService();
         RoleService rs = new RoleService();
         
+        String action = request.getParameter("action");
+        
+        String message = null;
+        User user = null;
+        String userEmail = null;
+        List<User> users = null;
+        List<Role> roles = null;
+        
         try {
             
-            List<User> users = us.getAll();
-            List<Role> roles = rs.getAll();
+            users = us.getAll();
+            roles = rs.getAll();
             
             request.setAttribute("users", users);
             request.setAttribute("roles", roles);
-            
-            String action = request.getParameter("action");
-            
-            String message = null;
-            User user = null;
-            
+
             switch (action) {
                 case "edit":
                     message = "edit";
                     request.setAttribute("message", message);
-                    String userEmail = request.getParameter("userEmail");
-
-                    user = us.get(userEmail);
                     
-                    users = us.getAll();
-                    roles = rs.getAll();
-
+                    userEmail = request.getParameter("userEmail");
+                    user = us.get(userEmail);
                     request.setAttribute("user", user);
-                    request.setAttribute("users", users);
-                    request.setAttribute("roles", roles);
 
-                    getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
-            
                     break;
-
+                case "delete":
+                    userEmail = request.getParameter("userEmail");
+                    us.deleteUser(userEmail);
+                    break;
             }
 
-
         } catch (NullPointerException e)    {
-            
-            getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
             
         } catch (Exception ex) {
             
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("message", "error");
+            
+        } finally   {
+            
+            try {    
+                users = us.getAll();
+            } catch (Exception ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            request.setAttribute("users", users);
+            
+            String isEmpty = ((users.isEmpty()) ? "true" : "false");
+            request.setAttribute("isEmpty", isEmpty);
+            
+            getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
         }
-        
-        
+
     }
 
 
@@ -83,16 +93,17 @@ public class UserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        HttpSession session = request.getSession();
+        
         UserService us = new UserService();
         RoleService rs = new RoleService();
-        
-        HttpSession session = request.getSession();
-            
+
         List<User> users = null;
         List<Role> roles = null;
         String action = request.getParameter("action");
 
         String message = null;
+        String errorMessage = null;
         User user = null;
         Role role = null;
         
@@ -119,20 +130,11 @@ public class UserServlet extends HttpServlet {
                     
                     user = new User(email, firstname, lastname, password, role);
                     us.addUser(user);
-                    
-                    users = us.getAll();
-                    roles = rs.getAll();
-
-                    request.setAttribute("users", users);
-                    request.setAttribute("roles", roles);
 
                     message = null;
                     request.setAttribute("message", message);
-                    getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
-            
                     break;
                 case "update":
-
                     email = request.getParameter("email");
                     firstname = request.getParameter("firstname");
                     lastname = request.getParameter("lastname");
@@ -143,21 +145,45 @@ public class UserServlet extends HttpServlet {
                     
                     user = new User(email, firstname, lastname, password, role);
                     us.updateUser(user);
-                    
-                    users = us.getAll();
-                    roles = rs.getAll();
-
-                    request.setAttribute("users", users);
-                    request.setAttribute("roles", roles);
-                    
-                    getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+                    break;
+                case "cancel":
                     break;
             }
             
+        } catch (SQLException ex)   {
+            
+            errorMessage = "User already exists.";
+            request.setAttribute("errorMessage", errorMessage);
+            message = null;
+            request.setAttribute("message", message);
+            
+        } catch (InvalidInputException e)   {
+            
+            errorMessage = "All fields are required.";
+            request.setAttribute("errorMessage", errorMessage);
+            message = null;
+            request.setAttribute("message", message);
+            
         } catch (Exception ex) {
+            
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }  finally  {
+            
+            try {
+                users = us.getAll();
+                roles = rs.getAll();
+                
+                request.setAttribute("users", users);
+                request.setAttribute("roles", roles);
+                
+                getServletContext().getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+            } catch (Exception ex) {
+                Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
-
+        
         
     }
 
