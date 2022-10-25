@@ -40,14 +40,16 @@
         <c:if test="${message eq null}">
         <h2>Add User</h2>
         <form action="user" method="post">
-            Email: <input type="text" name="email" value=""><br>
-            First name: <input type="text" name="firstname" value=""><br>
-            Last name: <input type="text" name="lastname" value=""><br>
-            Password: <input type="password" name="password" value=""><br>
+            Email: <input type="text" name="email" value="${user.email}"><br>
+            First name: <input type="text" name="firstname" value="${user.firstname}"><br>
+            Last name: <input type="text" name="lastname" value="${user.lastname}"><br>
+            Password: <input type="password" name="password" value="${user.password}"><br>
             <label for="role">Role:</label>
                 <select id="role" name="role">
                     <c:forEach items="${roles}" var="role">
-                        <option value="${role.roleID}">${role.roleName}</option>
+                        <option value="${role.roleID}"
+                                <c:if test="${user.role.roleID == role.roleID}"> selected</c:if>
+                        >${role.roleName}</option>
                     </c:forEach>
                 </select>
             <input type="hidden" name="action" value="add"><br>

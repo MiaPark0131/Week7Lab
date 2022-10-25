@@ -1,6 +1,5 @@
 package servlets;
 
-import exceptions.InvalidInputException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,6 +14,7 @@ import models.Role;
 import models.User;
 import services.RoleService;
 import services.UserService;
+import exceptions.InvalidInputException;
 
 /**
  *
@@ -52,11 +52,9 @@ public class UserServlet extends HttpServlet {
                 case "edit":
                     message = "edit";
                     request.setAttribute("message", message);
-                    
                     userEmail = request.getParameter("userEmail");
                     user = us.get(userEmail);
                     request.setAttribute("user", user);
-
                     break;
                 case "delete":
                     userEmail = request.getParameter("userEmail");
@@ -97,56 +95,39 @@ public class UserServlet extends HttpServlet {
         
         UserService us = new UserService();
         RoleService rs = new RoleService();
-
+        
         List<User> users = null;
         List<Role> roles = null;
         String action = request.getParameter("action");
 
         String message = null;
         String errorMessage = null;
-        User user = null;
+        
         Role role = null;
-        
-        String email = null;
-        String firstname = null;
-        String lastname = null;
-        String password = null;
-        String roleIDString = null;
-        int roleID = 0;
-        
+        User user = null;
+
         try {
+            
+            String email = request.getParameter("email");;
+            String firstname = request.getParameter("firstname");
+            String lastname = request.getParameter("lastname");
+            String password = request.getParameter("password");
+            int roleID = Integer.parseInt(request.getParameter("role"));
+
+            role = rs.getRole(roleID);
+            
+            user = new User(email, firstname, lastname, password, role);
+            
+            if (email.isEmpty() || firstname.isEmpty() || lastname.isEmpty() || password.isEmpty()) {
+                throw new InvalidInputException();
+            }
             
             switch (action) {
                 case "add":
-                    message = "add";
-                    request.setAttribute("message", message);
-                    email = request.getParameter("email");
-                    firstname = request.getParameter("firstname");
-                    lastname = request.getParameter("lastname");
-                    password = request.getParameter("password");
-                    roleIDString = request.getParameter("role");
-                    roleID = Integer.parseInt(roleIDString);
-                    role = rs.getRole(roleID);
-                    
-                    user = new User(email, firstname, lastname, password, role);
                     us.addUser(user);
-
-                    message = null;
-                    request.setAttribute("message", message);
                     break;
                 case "update":
-                    email = request.getParameter("email");
-                    firstname = request.getParameter("firstname");
-                    lastname = request.getParameter("lastname");
-                    password = request.getParameter("password");
-                    roleIDString = request.getParameter("role");
-                    roleID = Integer.parseInt(roleIDString);
-                    role = rs.getRole(roleID);
-                    
-                    user = new User(email, firstname, lastname, password, role);
                     us.updateUser(user);
-                    break;
-                case "cancel":
                     break;
             }
             
@@ -154,15 +135,19 @@ public class UserServlet extends HttpServlet {
             
             errorMessage = "User already exists.";
             request.setAttribute("errorMessage", errorMessage);
-            message = null;
-            request.setAttribute("message", message);
+            request.setAttribute("user", user);
+            
             
         } catch (InvalidInputException e)   {
             
             errorMessage = "All fields are required.";
-            request.setAttribute("errorMessage", errorMessage);
-            message = null;
+            if (action.equals("add"))
+                message = null;
+            else
+                message = "edit";
             request.setAttribute("message", message);
+            request.setAttribute("errorMessage", errorMessage);
+            request.setAttribute("user", user);
             
         } catch (Exception ex) {
             
@@ -173,7 +158,9 @@ public class UserServlet extends HttpServlet {
             try {
                 users = us.getAll();
                 roles = rs.getAll();
-                
+                String isEmpty = ((users.isEmpty()) ? "true" : "false");
+
+                request.setAttribute("isEmpty", isEmpty);
                 request.setAttribute("users", users);
                 request.setAttribute("roles", roles);
                 
