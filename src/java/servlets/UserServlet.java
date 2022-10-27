@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import models.Role;
 import models.User;
 import services.RoleService;
@@ -22,13 +21,10 @@ import exceptions.InvalidInputException;
  */
 public class UserServlet extends HttpServlet {
 
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        HttpSession session = request.getSession();
-        
+
         UserService us = new UserService();
         RoleService rs = new RoleService();
         
@@ -91,8 +87,6 @@ public class UserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        HttpSession session = request.getSession();
-        
         UserService us = new UserService();
         RoleService rs = new RoleService();
         
@@ -105,10 +99,10 @@ public class UserServlet extends HttpServlet {
         
         Role role = null;
         User user = null;
-
+        
         try {
             
-            String email = request.getParameter("email");;
+            String email = request.getParameter("email");
             String firstname = request.getParameter("firstname");
             String lastname = request.getParameter("lastname");
             String password = request.getParameter("password");
@@ -136,8 +130,7 @@ public class UserServlet extends HttpServlet {
             errorMessage = "User already exists.";
             request.setAttribute("errorMessage", errorMessage);
             request.setAttribute("user", user);
-            
-            
+                  
         } catch (InvalidInputException e)   {
             
             errorMessage = "All fields are required.";
@@ -145,6 +138,7 @@ public class UserServlet extends HttpServlet {
                 message = null;
             else
                 message = "edit";
+            
             request.setAttribute("message", message);
             request.setAttribute("errorMessage", errorMessage);
             request.setAttribute("user", user);
