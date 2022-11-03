@@ -126,7 +126,7 @@ public class UserServlet extends HttpServlet {
                     break;
             }
             
-        } catch (SQLException ex)   {
+        } catch (IllegalStateException ex)   {
             
             errorMessage = "User already exists.";
             request.setAttribute("errorMessage", errorMessage);

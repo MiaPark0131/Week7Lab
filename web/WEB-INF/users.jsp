@@ -41,8 +41,8 @@
         <h2>Add User</h2>
         <form action="user" method="post">
             Email: <input type="text" name="email" value="${user.email}"><br>
-            First name: <input type="text" name="firstname" value="${user.firstname}"><br>
-            Last name: <input type="text" name="lastname" value="${user.lastname}"><br>
+            First name: <input type="text" name="firstname" value="${user.firstName}"><br>
+            Last name: <input type="text" name="lastname" value="${user.lastName}"><br>
             Password: <input type="password" name="password" value="${user.password}"><br>
             <label for="role">Role:</label>
                 <select id="role" name="role">
