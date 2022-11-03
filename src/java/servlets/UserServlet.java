@@ -110,7 +110,8 @@ public class UserServlet extends HttpServlet {
 
             role = rs.getRole(roleID);
             
-            user = new User(email, firstname, lastname, password, role);
+            user = new User(email, firstname, lastname, password);
+            user.setRole(role);
             
             if (email.isEmpty() || firstname.isEmpty() || lastname.isEmpty() || password.isEmpty()) {
                 throw new InvalidInputException();

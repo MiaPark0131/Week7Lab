@@ -23,7 +23,7 @@
                 <tr><th>Email</th><th>First Name</th><th>Last Name</th><th>Role</th><th></th><th></th></tr>
                 <c:forEach items="${users}" var="user">
                 <tr>
-                    <td>${user.email}</td><td>${user.firstname}</td><td>${user.lastname}</td><td>${user.role.roleName}</td>
+                    <td>${user.email}</td><td>${user.firstName}</td><td>${user.lastName}</td><td>${user.role.roleName}</td>
                     <td><a href="<c:url value="user">
                                <c:param name="action" value="edit"/>
                                <c:param name="userEmail" value="${user.email}"/>
@@ -47,8 +47,8 @@
             <label for="role">Role:</label>
                 <select id="role" name="role">
                     <c:forEach items="${roles}" var="role">
-                        <option value="${role.roleID}"
-                                <c:if test="${user.role.roleID == role.roleID}"> selected</c:if>
+                        <option value="${role.roleId}"
+                                <c:if test="${user.role.roleId == role.roleId}"> selected</c:if>
                         >${role.roleName}</option>
                     </c:forEach>
                 </select>
@@ -61,14 +61,14 @@
         <h2>Edit User</h2>
         <form action="user" method="post">
             Email: ${user.email}<br>
-            First name: <input type="text" name="firstname" value="${user.firstname}"><br>
-            Last name: <input type="text" name="lastname" value="${user.lastname}"><br>
+            First name: <input type="text" name="firstname" value="${user.firstName}"><br>
+            Last name: <input type="text" name="lastname" value="${user.lastName}"><br>
             Password: <input type="text" name="password" value=""><br>
             <label for="role">Role: </label>
                 <select id="role" name="role">
                     <c:forEach items="${roles}" var="role">
-                        <option value="${role.roleID}"
-                                <c:if test="${user.role.roleID == role.roleID}"> selected</c:if>
+                        <option value="${role.roleId}"
+                                <c:if test="${user.role.roleId == role.roleId}"> selected</c:if>
                         >${role.roleName}</option>
                     </c:forEach>
                 </select>
