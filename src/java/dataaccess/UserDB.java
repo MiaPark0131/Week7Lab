@@ -43,8 +43,6 @@ public class UserDB {
             
             em.close();
         }
-        
-        
     }
     
     public void insert(User user) throws Exception {
@@ -83,7 +81,7 @@ public class UserDB {
     }
     
     public void delete(User user) throws Exception  {
-       EntityManager em = DBUtil.getEmFactory().createEntityManager();
+        EntityManager em = DBUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
         
         try {
